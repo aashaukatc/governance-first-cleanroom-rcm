@@ -1,4 +1,4 @@
-name: Expand publication payload
+name: Publish v0.1.1 research package
 
 on:
   schedule:
@@ -11,9 +11,14 @@ on:
 
 permissions:
   contents: write
+  issues: write
+
+concurrency:
+  group: publish-v0.1.1
+  cancel-in-progress: false
 
 jobs:
-  expand:
+  publish:
     runs-on: ubuntu-latest
     steps:
       - name: Check out main
@@ -32,14 +37,76 @@ jobs:
           rm -rf .bootstrap
           rm -f .github/workflows/bootstrap.yml
 
-      - name: Commit expanded repository
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+
+      - name: Install system dependencies
+        run: sudo apt-get update && sudo apt-get install -y graphviz zip
+
+      - name: Install project and release builders
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e '.[dev]' --no-build-isolation
+
+      - name: Run reproducibility and privacy gates
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m compileall -q src tests run_demo.py
+          python run_demo.py
+          python -m pytest -q
+          prohibited='(^|/)(phi|client_data|production_data|01_Raw)(/|$)'
+          if find . -type f | grep -E "$prohibited"; then
+            echo 'Prohibited operational-data path detected.'
+            exit 1
+          fi
+
+      - name: Build publication assets
+        run: python scripts/build_release_assets.py
+
+      - name: Commit readable repository and generated assets
         shell: bash
         run: |
           set -euo pipefail
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add -A
-          if ! git diff --cached --quiet; then
-            git commit -m 'feat: publish reproducible clean-room RCM research package [skip ci]'
-            git push origin HEAD:main
+          git commit -m 'feat: publish reproducible clean-room RCM research package v0.1.1 [skip ci]'
+          git push origin HEAD:main
+
+      - name: Create archival package
+        shell: bash
+        run: |
+          set -euo pipefail
+          git archive --format=zip --output Governance_First_Cleanroom_RCM_Publication_Package_v0.1.1.zip HEAD
+          sha256sum Governance_First_Cleanroom_RCM_Publication_Package_v0.1.1.zip > Governance_First_Cleanroom_RCM_Publication_Package_v0.1.1_SHA256.txt
+
+      - name: Create tag and GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git rev-parse v0.1.1 >/dev/null 2>&1; then
+            echo 'Tag v0.1.1 already exists; refusing to overwrite an immutable release.'
+            exit 1
           fi
+          git tag -a v0.1.1 -m 'Governance-First Clean-Room RCM Architecture v0.1.1'
+          git push origin v0.1.1
+          gh release create v0.1.1 \
+            Governance_First_Cleanroom_RCM_Publication_Package_v0.1.1.zip \
+            Governance_First_Cleanroom_RCM_Publication_Package_v0.1.1_SHA256.txt \
+            publication/Governance_First_Cleanroom_RCM_Working_Paper.pdf \
+            publication/Governance_First_Cleanroom_RCM_Working_Paper.docx \
+            docs/Governance_First_Cleanroom_RCM_Controls_and_Data_Dictionary.xlsx \
+            --title 'Governance-First Clean-Room RCM Architecture v0.1.1' \
+            --notes-file RELEASE_NOTES.md
+
+      - name: Close publication tracking issue
+        if: success()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh issue close 2 --comment 'Published v0.1.1 successfully. Zenodo can now archive the GitHub Release.'
