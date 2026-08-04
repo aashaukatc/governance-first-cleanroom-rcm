@@ -1,0 +1,33 @@
+{
+  "contract_version": "1.0.0",
+  "families": {
+    "claim_financial": {
+      "filename_signals": ["claim", "financial"],
+      "grain": "one row per synthetic claim line",
+      "required_columns": [
+        "Claim No", "DOS", "Payer Name", "Rendering Provider", "CPT",
+        "Charge Amount", "Payment Amount", "Adjustment Amount", "Balance Amount", "Claim Status"
+      ],
+      "approved_optional_columns": [],
+      "unexpected_column_disposition": "QUARANTINED_SCHEMA_DRIFT"
+    },
+    "provider_payment": {
+      "filename_signals": ["payment"],
+      "grain": "one row per synthetic payment event",
+      "required_columns": [
+        "Payment ID", "Claim No", "Posting Date", "Payer Name", "Provider ID", "Payment Amount"
+      ],
+      "approved_optional_columns": [],
+      "unexpected_column_disposition": "QUARANTINED_SCHEMA_DRIFT"
+    },
+    "denial": {
+      "filename_signals": ["denial"],
+      "grain": "one row per synthetic denial event",
+      "required_columns": [
+        "Denial ID", "Claim No", "Denial Date", "Payer Name", "CPT", "Denial Code", "Denial Category"
+      ],
+      "approved_optional_columns": [],
+      "unexpected_column_disposition": "QUARANTINED_SCHEMA_DRIFT"
+    }
+  }
+}

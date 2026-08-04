@@ -24,6 +24,7 @@ Using entirely synthetic, fictional, non-PHI data, the reference implementation 
 No database server is required for the Python demonstration.
 
 ```bash
+python scripts/generate_synthetic_fixtures.py
 python run_demo.py
 python -m pytest -q
 ```
@@ -39,25 +40,25 @@ Both scenarios produce 180 clean synthetic claim records and 20 clean synthetic 
 
 ## Primary artifacts
 
-- [Working paper - DOCX](publication/Governance_First_Cleanroom_RCM_Working_Paper.docx)
-- [Working paper - PDF](publication/Governance_First_Cleanroom_RCM_Working_Paper.pdf)
-- [Manuscript source](publication/manuscript.md)
+- [Manuscript source sections](publication/manuscript/)
 - [Architecture diagram](docs/architecture.svg)
-- [Controls and data-dictionary workbook](docs/Governance_First_Cleanroom_RCM_Controls_and_Data_Dictionary.xlsx)
+- [Machine-readable QA controls](docs/qa_control_matrix.csv)
 - [Source provenance and claim boundaries](publication/SOURCE_PROVENANCE_AND_CLAIM_BOUNDARIES.md)
 - [Package manifest](publication/PACKAGE_MANIFEST.md)
+
+The evidence-gated **Build and publish release** workflow generates the archival DOCX, PDF, XLSX control workbook, PNG architecture figure, source ZIP, and SHA-256 checksum before creating GitHub Release `v0.1.1` for Zenodo.
 
 ## Repository map
 
 | Location | Purpose |
 |---|---|
-| `data/` | Synthetic inputs, fictional mappings, report contracts, and remediation patch. |
+| `data/` | Fictional mappings, report contracts, and remediation patch; raw fixtures are generated deterministically. |
 | `src/cleanroom_rcm/` | Intake, contract, mapping, lineage, reconciliation, and QA implementation. |
 | `sql/` | SQL Server control, cross-reference, clean-fact, QA-gate, and mart objects. |
 | `outputs/` | Reproducible outputs for dirty and remediated scenarios. |
 | `tests/` | Executable acceptance tests. |
 | `docs/` | Architecture sources and QA-control workbook. |
-| `publication/` | Manuscript, deposit metadata, provenance, and release manifest. |
+| `publication/` | Sectioned manuscript source, deposit metadata, provenance, release manifest, and publication files. |
 | `evidence/` | Test, accessibility, PDF-preflight, and release-validation records. |
 
 ## Data and privacy boundary

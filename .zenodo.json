@@ -1,0 +1,20 @@
+{
+  "title": "Governance-First Clean-Room Architecture for Healthcare Revenue Cycle Analytics",
+  "description": "Synthetic non-PHI reference implementation accompanying a design-science working paper.",
+  "creators": [
+    {
+      "name": "Shaukat, Muhammad Aftab",
+      "orcid": "0009-0009-0342-9877"
+    }
+  ],
+  "license": "Apache-2.0",
+  "keywords": [
+    "healthcare RCM",
+    "data governance",
+    "data quality",
+    "lineage",
+    "clean-room analytics"
+  ],
+  "upload_type": "software",
+  "access_right": "open"
+}

@@ -1,0 +1,16 @@
+control_id,layer,risk,test,threshold,severity,required_action
+INT-001,Intake,Source accountability,Every discovered source file receives an explicit disposition,100% files accounted for,RED,Block run and investigate missing disposition
+INT-002,Intake,Duplicate contamination,SHA-256 fingerprint is unique within the registry,0 accepted duplicate hashes,YELLOW,Quarantine duplicate; retain evidence
+INT-003,Contract,Schema drift,Header signature conforms to approved report-family contract,0 drifted files accepted,YELLOW,Quarantine and open onboarding review
+INT-004,Contract,Unknown source family,Unknown files remain visible in pending onboarding,0 silently ignored files,YELLOW,Preserve file and create report-family decision
+MAP-001,Semantic,Payer mapping completeness,Every accepted payer value maps to an approved canonical value,100% mapped,RED,Block semantic publication
+MAP-002,Semantic,Provider mapping completeness,Every accepted provider value maps to an approved canonical value,100% mapped,RED,Block semantic publication
+MAP-003,Semantic,CPT mapping completeness,Every accepted CPT/HCPCS value maps to a governed category,100% mapped,RED,Block semantic publication
+MAP-004,Semantic,Denial mapping completeness,Every denial code maps to a governed category,100% mapped,RED,Block denial mart publication
+FIN-001,Financial,Financial equation,Charge equals payment plus adjustment plus balance within tolerance,Difference <= $0.01 per row,RED,Reject affected rows and reconcile source
+KEY-001,Integrity,Business-key uniqueness,No duplicate claim business keys within the governed grain,0 duplicates,RED,Block load; resolve grain or duplicate source
+LIN-001,Lineage,Row provenance,"Every clean row contains source file, source hash, run, and transformation version",100% traceable,RED,Block publication
+REC-001,Reconciliation,Row counts,"Accepted source rows reconcile to staged, rejected, and clean rows",100% accounted for,RED,Block run and investigate variance
+QA-001,Publish gate,No silent unknowns,"Unknown/unclassified values are represented as failed QA, not permanent semantic labels",0 permanent unknown labels,RED,Keep exception open until mapped
+QA-002,Publish gate,Status integrity,Overall status equals highest-severity failed control,Deterministic status,RED,Correct gate logic before publishing
+SEC-001,Privacy,Public artifact safety,"No PHI, credentials, client raw data, or patient identifiers in public artifacts",0 prohibited items,RED,Remove exposure; rotate secrets if needed

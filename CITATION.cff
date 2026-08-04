@@ -1,0 +1,20 @@
+cff-version: 1.2.0
+title: "Governance-First Clean-Room Architecture for Healthcare Revenue Cycle Analytics"
+message: "Please cite the archived release and accompanying working paper."
+type: software
+authors:
+  - family-names: Shaukat
+    given-names: Muhammad Aftab
+    orcid: "https://orcid.org/0009-0009-0342-9877"
+version: 0.1.1
+date-released: 2026-08-04
+license: Apache-2.0
+repository-code: "https://github.com/aashaukatc/governance-first-cleanroom-rcm"
+abstract: "A synthetic, non-PHI reference implementation of immutable intake, hash-based duplicate control, report-family contracts, schema-drift quarantine, mapping governance, lineage, reconciliation, and GREEN/YELLOW/RED publish gates for healthcare RCM analytics."
+keywords:
+  - healthcare revenue cycle management
+  - data governance
+  - data quality
+  - data lineage
+  - clean room analytics
+  - SQL Server

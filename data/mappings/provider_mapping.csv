@@ -1,0 +1,5 @@
+raw_value,canonical_value,provider_group,specialty,active
+PROV-001,PROV-001,Synthetic Medical Group,Cardiology,1
+PROV-002,PROV-002,Synthetic Medical Group,Internal Medicine,1
+PROV-003,PROV-003,Synthetic Medical Group,Physical Therapy,1
+PROV-004,PROV-004,Synthetic Medical Group,Wound Care,1

@@ -1,12 +1,6 @@
-name: Publish v0.1.1 research package
+name: Build and publish release
 
 on:
-  schedule:
-    - cron: '*/5 * * * *'
-  issues:
-    types: [opened]
-  pull_request_target:
-    types: [opened, reopened, synchronize]
   workflow_dispatch:
 
 permissions:
@@ -14,28 +8,25 @@ permissions:
   issues: write
 
 concurrency:
-  group: publish-v0.1.1
+  group: release-v0.1.1
   cancel-in-progress: false
 
 jobs:
-  publish:
+  release:
     runs-on: ubuntu-latest
     steps:
-      - name: Check out main
+      - name: Check out repository
         uses: actions/checkout@v4
         with:
-          ref: main
           fetch-depth: 0
 
-      - name: Expand sanitized source package
+      - name: Refuse to overwrite an existing immutable release
         shell: bash
         run: |
-          set -euo pipefail
-          cat .bootstrap/part* > /tmp/publication-payload.b64
-          base64 --decode /tmp/publication-payload.b64 > /tmp/publication-payload.tar.gz
-          tar -xzf /tmp/publication-payload.tar.gz -C .
-          rm -rf .bootstrap
-          rm -f .github/workflows/bootstrap.yml
+          if git rev-parse v0.1.1 >/dev/null 2>&1; then
+            echo 'Tag v0.1.1 already exists. Create a new version instead of overwriting it.'
+            exit 1
+          fi
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -43,11 +34,10 @@ jobs:
           python-version: '3.12'
           cache: pip
 
-      - name: Install system dependencies
-        run: sudo apt-get update && sudo apt-get install -y graphviz zip
-
-      - name: Install project and release builders
+      - name: Install dependencies
         run: |
+          sudo apt-get update
+          sudo apt-get install -y graphviz zip
           python -m pip install --upgrade pip
           python -m pip install -e '.[dev]' --no-build-isolation
 
@@ -55,11 +45,11 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          python -m compileall -q src tests run_demo.py
+          python -m compileall -q src scripts tests run_demo.py
           python run_demo.py
           python -m pytest -q
           prohibited='(^|/)(phi|client_data|production_data|01_Raw)(/|$)'
-          if find . -type f | grep -E "$prohibited"; then
+          if git ls-files | grep -E "$prohibited"; then
             echo 'Prohibited operational-data path detected.'
             exit 1
           fi
@@ -67,15 +57,20 @@ jobs:
       - name: Build publication assets
         run: python scripts/build_release_assets.py
 
-      - name: Commit readable repository and generated assets
+      - name: Commit generated assets
         shell: bash
         run: |
           set -euo pipefail
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add -A
-          git commit -m 'feat: publish reproducible clean-room RCM research package v0.1.1 [skip ci]'
-          git push origin HEAD:main
+          git add publication/Governance_First_Cleanroom_RCM_Working_Paper.docx \
+                  publication/Governance_First_Cleanroom_RCM_Working_Paper.pdf \
+                  docs/Governance_First_Cleanroom_RCM_Controls_and_Data_Dictionary.xlsx \
+                  docs/architecture.png SHA256SUMS.txt
+          if ! git diff --cached --quiet; then
+            git commit -m 'chore(release): generate v0.1.1 publication assets [skip ci]'
+            git push origin HEAD:main
+          fi
 
       - name: Create archival package
         shell: bash
@@ -90,10 +85,6 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          if git rev-parse v0.1.1 >/dev/null 2>&1; then
-            echo 'Tag v0.1.1 already exists; refusing to overwrite an immutable release.'
-            exit 1
-          fi
           git tag -a v0.1.1 -m 'Governance-First Clean-Room RCM Architecture v0.1.1'
           git push origin v0.1.1
           gh release create v0.1.1 \
@@ -109,4 +100,4 @@ jobs:
         if: success()
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh issue close 2 --comment 'Published v0.1.1 successfully. Zenodo can now archive the GitHub Release.'
+        run: gh issue close 2 --comment 'Published v0.1.1. Zenodo can now archive the GitHub Release.' || true

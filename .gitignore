@@ -1,0 +1,50 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.venv/
+venv/
+dist/
+build/
+
+# Editors and OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Local secrets and runtime configuration
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.pfx
+*.p12
+
+# Healthcare / operational-data safety
+01_Raw/
+raw/
+client_data/
+production_data/
+phi/
+*.bak
+*.tmp
+
+# Office lock files
+~$*.docx
+~$*.xlsx
+
+# Render intermediates
+_renders/
+rendered_pages/
+
+# Deterministically generated demonstration data and outputs
+data/scenario_a_dirty/
+data/scenario_b_resolved/
+outputs/
+
+# Packaging intermediates
+*.zip
+*_SHA256.txt

@@ -1,0 +1,9 @@
+## 7. Limitations and Future Work
+
+The study has several limitations. First, evaluation uses synthetic data. This protects privacy and supports reproducibility but does not represent the full variability, volume, and ambiguity of production RCM exports. Second, the demonstration covers three report families and a limited set of mappings. Production systems may include dozens of reports with overlapping periods, replacement extracts, reversals, secondary insurance, patient payments, and multiple financial grains.
+
+Third, SHA-256 identifies byte-identical files but does not identify semantic duplicates, partial overlaps, or replacement files. Future work should add period-aware source manifests, business-key overlap analysis, and version relationships. Fourth, the report-contract implementation uses headers as the primary schema signal. Production contracts should include types, nullability, domain rules, grain, date semantics, encoding, delimiter, and source report identifiers.
+
+Fifth, the architecture does not establish regulatory compliance. A production implementation would require organization-specific privacy, cybersecurity, access, retention, and audit controls. Sixth, the evaluation does not quantify runtime overhead, false-positive drift alerts, steward workload, or financial improvement. These should be tested in authorized pilot environments.
+
+Future research should evaluate the architecture across multiple RCM systems and report families; define a standardized RCM data-quality taxonomy; measure time from source defect to resolution; compare silent-default and explicit-exception approaches; test mapping-version effects on historical reports; and develop source-coverage metrics that prevent comparisons across incomplete provider, payer, or period populations. A further extension should link each executive KPI to its source contracts, coverage statement, control status, and accountable action.

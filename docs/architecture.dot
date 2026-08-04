@@ -1,0 +1,34 @@
+digraph cleanroom {
+  graph [rankdir=TB, bgcolor="white", pad="0.20", nodesep="0.34", ranksep="0.42 equally",
+         fontname="Arial", splines=ortho];
+  node [shape=box, style="rounded,filled", fillcolor="#F7F9FC", color="#354A5F", penwidth=1.5,
+        fontname="Arial", fontsize=16, margin="0.22,0.14", width=5.4];
+  edge [color="#5C6B7A", penwidth=1.4, arrowsize=0.85];
+
+  source [label="1  FRAGMENTED RCM EXPORTS\nClaims | payments | denials | aging | reference", fillcolor="#EDF3F8"];
+  intake [label="2  IMMUTABLE INTAKE REGISTRY\nOriginal bytes | receipt metadata | SHA-256 | disposition"];
+  contract [shape=diamond, width=4.7, height=1.15, label="3  REPORT CONTRACT GATE\nFamily recognized? Schema conforming?"];
+  contain [label="CONTAINMENT ROUTES\nDuplicate -> block reload    |    Unknown -> onboarding    |    Drift -> quarantine", fillcolor="#FFF6E5", width=7.6];
+  staging [label="4  TYPED STAGING\nPreserve raw values beside parsed and normalized values"];
+  mapping [label="5  GOVERNED MAPPINGS\nPayer | provider | facility | CPT/HCPCS | status | denial codes"];
+  clean [label="6  CLEAN FACTS + CONFORMED DIMENSIONS\nDeclared grain | stable keys | approved business meaning"];
+  qa [label="7  LINEAGE + RECONCILIATION + QA\nSource hash | row lineage | control totals | invariants | exceptions"];
+  gate [shape=diamond, width=4.7, height=1.15, label="8  PUBLISH GATE\nGREEN | YELLOW | RED"];
+  yellow [label="YELLOW\nContained exception; controlled review", fillcolor="#FFF6E5", width=2.6];
+  red [label="RED\nBlock semantic publication", fillcolor="#FCEBEC", width=2.6];
+  green [label="GREEN\nRelease governed decision marts", fillcolor="#EAF6EE", width=2.8];
+  decision [label="9  DECISION-READY CONSUMPTION\nExcel | Power BI | workqueues | management action", fillcolor="#EAF6EE"];
+
+  source -> intake -> contract;
+  contract -> staging;
+  contract -> contain [style=dashed, constraint=false];
+  contain -> contract [style=dashed, constraint=false];
+  staging -> mapping -> clean -> qa -> gate;
+  gate -> yellow;
+  gate -> red;
+  gate -> green;
+  {rank=same; yellow; red; green;}
+  yellow -> qa [style=dashed, constraint=false];
+  red -> qa [style=dashed, constraint=false];
+  green -> decision;
+}

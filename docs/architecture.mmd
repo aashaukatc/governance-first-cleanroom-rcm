@@ -1,0 +1,21 @@
+flowchart TB
+  A[1. FRAGMENTED RCM EXPORTS<br/>Claims | payments | denials | aging | reference]
+  B[2. IMMUTABLE INTAKE REGISTRY<br/>Original bytes | receipt metadata | SHA-256 | disposition]
+  C{3. REPORT CONTRACT GATE<br/>Family recognized? Schema conforming?}
+  X[CONTAINMENT ROUTES<br/>Duplicate: block reload | Unknown: onboarding | Drift: quarantine]
+  D[4. TYPED STAGING<br/>Preserve raw values beside parsed and normalized values]
+  E[5. GOVERNED MAPPINGS<br/>Payer | provider | facility | CPT/HCPCS | status | denial codes]
+  F[6. CLEAN FACTS + CONFORMED DIMENSIONS<br/>Declared grain | stable keys | approved business meaning]
+  G[7. LINEAGE + RECONCILIATION + QA<br/>Source hash | row lineage | control totals | invariants | exceptions]
+  H{8. PUBLISH GATE<br/>GREEN | YELLOW | RED}
+  Y[YELLOW<br/>Contained exception; controlled review]
+  R[RED<br/>Block semantic publication]
+  I[GREEN<br/>Release governed decision marts]
+  L[9. DECISION-READY CONSUMPTION<br/>Excel | Power BI | workqueues | management action]
+  A --> B --> C --> D --> E --> F --> G --> H
+  C -.-> X -.-> C
+  H --> Y
+  H --> R
+  H --> I --> L
+  Y -. remediate .-> G
+  R -. remediate .-> G
