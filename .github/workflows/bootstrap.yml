@@ -5,6 +5,8 @@ on:
     - cron: '*/5 * * * *'
   issues:
     types: [opened]
+  pull_request_target:
+    types: [opened, reopened, synchronize]
   workflow_dispatch:
 
 permissions:
