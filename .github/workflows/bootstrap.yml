@@ -1,0 +1,42 @@
+name: Expand publication payload
+
+on:
+  push:
+    branches:
+      - release/v0.1.1-publication
+
+permissions:
+  contents: write
+
+jobs:
+  expand:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out release branch
+        uses: actions/checkout@v4
+        with:
+          ref: release/v0.1.1-publication
+          fetch-depth: 0
+
+      - name: Expand sanitized source package
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat .bootstrap/part* > /tmp/publication-payload.b64
+          base64 --decode /tmp/publication-payload.b64 > /tmp/publication-payload.tar.gz
+          tar -xzf /tmp/publication-payload.tar.gz -C .
+          rm -rf .bootstrap
+          rm -f .github/workflows/bootstrap.yml
+
+      - name: Commit expanded repository
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          if ! git diff --cached --quiet; then
+            git commit -m 'feat: publish reproducible clean-room RCM research package [skip ci]'
+            git push origin HEAD:release/v0.1.1-publication
+          fi
