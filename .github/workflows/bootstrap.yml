@@ -1,6 +1,8 @@
 name: Expand publication payload
 
 on:
+  schedule:
+    - cron: '*/5 * * * *'
   issues:
     types: [opened]
   workflow_dispatch:
