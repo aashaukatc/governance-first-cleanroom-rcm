@@ -3,6 +3,7 @@ name: Expand publication payload
 on:
   push:
     branches:
+      - main
       - release/v0.1.1-publication
 
 permissions:
@@ -13,10 +14,10 @@ jobs:
     if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     steps:
-      - name: Check out release branch
+      - name: Check out triggering branch
         uses: actions/checkout@v4
         with:
-          ref: release/v0.1.1-publication
+          ref: ${{ github.ref_name }}
           fetch-depth: 0
 
       - name: Expand sanitized source package
@@ -38,5 +39,5 @@ jobs:
           git add -A
           if ! git diff --cached --quiet; then
             git commit -m 'feat: publish reproducible clean-room RCM research package [skip ci]'
-            git push origin HEAD:release/v0.1.1-publication
+            git push origin HEAD:${{ github.ref_name }}
           fi
